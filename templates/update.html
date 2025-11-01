@@ -1,0 +1,87 @@
+{% extends "base.html" %}
+
+{% block title %}Update Post - Foodie Share{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8 col-lg-7">
+        <div class="card">
+            <div class="card-body p-5">
+                <div class="text-center mb-4">
+                    <i class="fas fa-edit fa-3x text-danger mb-3"></i>
+                    <h2 class="fw-bold">Update Your Dish</h2>
+                    <p class="text-muted">Make changes to your post</p>
+                </div>
+
+                <form method="POST" action="{{ url_for('update_post', id=post.id) }}" enctype="multipart/form-data">
+                    <div class="mb-4">
+                        <label for="dish_name" class="form-label fw-bold">
+                            <i class="fas fa-utensils"></i> Dish Name *
+                        </label>
+                        <input type="text" 
+                               class="form-control form-control-lg" 
+                               id="dish_name" 
+                               name="dish_name" 
+                               value="{{ post.dish_name }}"
+                               required>
+                    </div>
+
+                    {% if post.image_filename %}
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Current Photo:</label>
+                        <div class="text-center">
+                            <img src="{{ url_for('static', filename='uploads/' + post.image_filename) }}" 
+                                 alt="{{ post.dish_name }}" 
+                                 class="img-fluid rounded" 
+                                 style="max-height: 300px;">
+                        </div>
+                    </div>
+                    {% endif %}
+
+                    <div class="mb-4">
+                        <label for="image" class="form-label fw-bold">
+                            <i class="fas fa-image"></i> {% if post.image_filename %}Update Photo{% else %}Add Photo{% endif %}
+                        </label>
+                        <input type="file" 
+                               class="form-control form-control-lg" 
+                               id="image" 
+                               name="image" 
+                               accept="image/*">
+                        <small class="text-muted">Leave empty to keep current photo</small>
+                    </div>
+
+                    <div class="mb-4">
+                        <label for="ingredients" class="form-label fw-bold">
+                            <i class="fas fa-list"></i> Ingredients *
+                        </label>
+                        <textarea class="form-control" 
+                                  id="ingredients" 
+                                  name="ingredients" 
+                                  rows="5" 
+                                  required>{{ post.ingredients }}</textarea>
+                    </div>
+
+                    <div class="mb-4">
+                        <label for="description" class="form-label fw-bold">
+                            <i class="fas fa-align-left"></i> Description
+                        </label>
+                        <textarea class="form-control" 
+                                  id="description" 
+                                  name="description" 
+                                  rows="4">{{ post.description if post.description else '' }}</textarea>
+                    </div>
+
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-custom btn-lg py-3">
+                            <i class="fas fa-save"></i> Save Changes
+                        </button>
+                        <a href="{{ url_for('view_post', id=post.id) }}" class="btn btn-outline-secondary btn-lg">
+                            <i class="fas fa-times"></i> Cancel
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

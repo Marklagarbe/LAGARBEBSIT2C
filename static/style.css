@@ -1,0 +1,406 @@
+/* ===== COLOR VARIABLES ===== */
+:root {
+    --primary-color: #ff6b6b;
+    --secondary-color: #4ecdc4;
+    --accent-color: #ffe66d;
+    --dark: #2d3436;
+    --light: #f8f9fa;
+    --gray: #636e72;
+    --success: #00b894;
+    --danger: #d63031;
+    --warning: #fdcb6e;
+}
+
+/* ===== GLOBAL STYLES ===== */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+    background-attachment: fixed;
+    min-height: 100vh;
+    color: var(--dark);
+}
+
+/* ===== NAVBAR STYLES ===== */
+.navbar {
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color)) !important;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+    padding: 1rem 0;
+    backdrop-filter: blur(10px);
+}
+
+.navbar-brand {
+    font-weight: 800;
+    font-size: 1.8rem;
+    color: white !important;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+    transition: transform 0.3s;
+}
+
+.navbar-brand:hover {
+    transform: scale(1.05);
+}
+
+.nav-link {
+    color: rgba(255,255,255,0.95) !important;
+    font-weight: 600;
+    font-size: 1.05rem;
+    padding: 0.5rem 1rem !important;
+    margin: 0 0.2rem;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+    position: relative;
+}
+
+.nav-link:hover {
+    background-color: rgba(255,255,255,0.2);
+    transform: translateY(-2px);
+    color: white !important;
+}
+
+.nav-link i {
+    margin-right: 5px;
+}
+
+/* ===== CONTAINER STYLES ===== */
+.container-main {
+    max-width: 1200px;
+    margin: 40px auto;
+    padding: 0 20px;
+}
+
+/* ===== CARD STYLES ===== */
+.card {
+    border: none;
+    border-radius: 20px;
+    box-shadow: 0 8px 30px rgba(0,0,0,0.12);
+    transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+    overflow: hidden;
+    background: white;
+    position: relative;
+}
+
+.card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 5px;
+    background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+
+.card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 15px 40px rgba(0,0,0,0.2);
+}
+
+.card:hover::before {
+    opacity: 1;
+}
+
+.card-img-top {
+    height: 280px;
+    object-fit: cover;
+    transition: transform 0.5s ease;
+}
+
+.card:hover .card-img-top {
+    transform: scale(1.1);
+}
+
+.card-body {
+    padding: 1.5rem;
+}
+
+.card-title {
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: var(--dark);
+    margin-bottom: 0.75rem;
+}
+
+.card-text {
+    color: var(--gray);
+    line-height: 1.6;
+}
+
+.card-footer {
+    background-color: rgba(0,0,0,0.02);
+    border-top: 1px solid rgba(0,0,0,0.05);
+    padding: 1rem 1.5rem;
+}
+
+/* ===== BUTTON STYLES ===== */
+.btn-custom {
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+    border: none;
+    color: white;
+    font-weight: 700;
+    padding: 12px 35px;
+    border-radius: 30px;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(255,107,107,0.3);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-size: 0.95rem;
+}
+
+.btn-custom:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(255,107,107,0.4);
+    color: white;
+    background: linear-gradient(135deg, var(--secondary-color), var(--primary-color));
+}
+
+.btn-custom:active {
+    transform: translateY(-1px);
+}
+
+.btn-custom i {
+    margin-right: 8px;
+}
+
+.btn-outline-secondary {
+    border: 2px solid var(--gray);
+    color: var(--gray);
+    font-weight: 600;
+    border-radius: 30px;
+    padding: 12px 35px;
+    transition: all 0.3s;
+}
+
+.btn-outline-secondary:hover {
+    background-color: var(--gray);
+    color: white;
+    transform: translateY(-2px);
+}
+
+/* ===== FORM STYLES ===== */
+.form-control,
+.form-control-lg {
+    border: 2px solid #e9ecef;
+    border-radius: 12px;
+    padding: 14px 18px;
+    transition: all 0.3s;
+    font-size: 1rem;
+}
+
+.form-control:focus,
+.form-control-lg:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 0.2rem rgba(255,107,107,0.15);
+}
+
+.form-label {
+    font-weight: 600;
+    color: var(--dark);
+    margin-bottom: 0.5rem;
+    font-size: 1rem;
+}
+
+textarea.form-control {
+    resize: vertical;
+    min-height: 120px;
+}
+
+/* ===== BADGE STYLES ===== */
+.badge-custom {
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+    padding: 8px 20px;
+    border-radius: 25px;
+    font-weight: 700;
+    font-size: 0.9rem;
+    color: white;
+    display: inline-block;
+    box-shadow: 0 3px 10px rgba(255,107,107,0.3);
+}
+
+/* ===== ALERT STYLES ===== */
+.alert {
+    border-radius: 15px;
+    border: none;
+    padding: 1.2rem 1.5rem;
+    font-weight: 600;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    animation: slideDown 0.5s ease;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.alert-success {
+    background: linear-gradient(135deg, #00b894, #00cec9);
+    color: white;
+}
+
+.alert-danger {
+    background: linear-gradient(135deg, #d63031, #e17055);
+    color: white;
+}
+
+.alert-warning {
+    background: linear-gradient(135deg, #fdcb6e, #ffeaa7);
+    color: var(--dark);
+}
+
+.alert-info {
+    background: linear-gradient(135deg, #0984e3, #74b9ff);
+    color: white;
+}
+
+/* ===== FOOTER STYLES ===== */
+footer {
+    background: linear-gradient(135deg, var(--dark), #636e72);
+    color: white;
+    padding: 30px 0;
+    margin-top: 80px;
+    box-shadow: 0 -4px 20px rgba(0,0,0,0.1);
+}
+
+footer p {
+    margin: 0;
+    font-weight: 500;
+}
+
+footer .fa-heart {
+    animation: heartbeat 1.5s infinite;
+}
+
+@keyframes heartbeat {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+}
+
+/* ===== PROFILE STYLES ===== */
+.profile-avatar {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1.5rem;
+    box-shadow: 0 10px 30px rgba(255,107,107,0.3);
+    animation: float 3s ease-in-out infinite;
+}
+
+@keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+}
+
+.profile-avatar i {
+    font-size: 4rem;
+    color: white;
+}
+
+/* ===== DISPLAY HEADINGS ===== */
+.display-4 {
+    font-weight: 800;
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.display-5 {
+    font-weight: 700;
+    color: var(--dark);
+}
+
+/* ===== INGREDIENT LIST STYLES ===== */
+.bg-light.rounded {
+    background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 20%) !important;
+    border-left: 4px solid var(--primary-color);
+}
+
+/* ===== RESPONSIVE STYLES ===== */
+@media (max-width: 768px) {
+    .navbar-brand {
+        font-size: 1.4rem;
+    }
+
+    .card-img-top {
+        height: 220px;
+    }
+
+    .container-main {
+        padding: 0 15px;
+        margin: 20px auto;
+    }
+
+    .btn-custom,
+    .btn-outline-secondary {
+        padding: 10px 25px;
+        font-size: 0.9rem;
+    }
+
+    .display-4 {
+        font-size: 2.5rem;
+    }
+}
+
+/* ===== LOADING ANIMATION ===== */
+.loading {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    border: 3px solid rgba(255,255,255,0.3);
+    border-radius: 50%;
+    border-top-color: white;
+    animation: spin 1s ease-in-out infinite;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+/* ===== HOVER EFFECTS ===== */
+a {
+    text-decoration: none;
+    transition: all 0.3s ease;
+}
+
+a:hover {
+    text-decoration: none;
+}
+
+/* ===== IMAGE PLACEHOLDER ===== */
+.card-img-top.bg-light {
+    background: linear-gradient(135deg, #f5f6fa 0%, #dfe4ea 100%) !important;
+}
+
+/* ===== SCROLLBAR STYLES ===== */
+::-webkit-scrollbar {
+    width: 10px;
+}
+
+::-webkit-scrollbar-track {
+    background: #f1f1f1;
+}
+
+::-webkit-scrollbar-thumb {
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+    border-radius: 5px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(135deg, var(--secondary-color), var(--primary-color));
+}

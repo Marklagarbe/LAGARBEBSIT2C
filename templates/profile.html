@@ -1,0 +1,95 @@
+{% extends "base.html" %}
+
+{% block title %}Profile - Foodie Share{% endblock %}
+
+{% block content %}
+<div class="text-center mb-5">
+    <div class="d-inline-block p-4 rounded-circle bg-gradient" style="background: linear-gradient(135deg, #ff6b6b, #4ecdc4);">
+        <i class="fas fa-user fa-4x text-white"></i>
+    </div>
+    <h1 class="display-4 fw-bold mt-3">{{ user.username if user else 'User' }}</h1>
+    <p class="text-muted lead">
+        <i class="fas fa-envelope"></i> {{ user.email if user else '' }}
+    </p>
+    <p class="text-muted">
+        <i class="fas fa-calendar-alt"></i> Joined {{ user.created.strftime('%B %d, %Y') if user else '' }}
+    </p>
+
+    <div class="mt-3">
+        <span class="badge badge-custom fs-5">
+            <i class="fas fa-utensils"></i> {{ posts|length if posts else 0 }} Dishes Shared
+        </span>
+    </div>
+</div>
+
+<hr class="my-5">
+
+<h2 class="fw-bold mb-4 text-center">
+    <i class="fas fa-book-open text-danger"></i> My Recipe Collection
+</h2>
+
+{% if posts %}
+<div class="row g-4">
+    {% for post in posts %}
+    <div class="col-md-6 col-lg-4">
+        <div class="card h-100">
+            {% if post.image_filename %}
+            <img src="{{ url_for('static', filename='uploads/' + post.image_filename) }}"
+                 class="card-img-top"
+                 alt="{{ post.dish_name }}">
+            {% else %}
+            <div class="card-img-top bg-light d-flex align-items-center justify-content-center" style="height: 250px;">
+                <i class="fas fa-image fa-5x text-muted"></i>
+            </div>
+            {% endif %}
+
+            <div class="card-body">
+                <h5 class="card-title fw-bold">{{ post.dish_name }}</h5>
+
+                {% if post.description %}
+                <p class="card-text">
+                    {{ post.description[:80] }}{% if post.description|length > 80 %}...{% endif %}
+                </p>
+                {% endif %}
+
+                <div class="d-flex justify-content-between align-items-center mt-3">
+                    <a href="{{ url_for('view_post', id=post.id) }}" class="btn btn-custom btn-sm">
+                        <i class="fas fa-eye"></i> View
+                    </a>
+                    {% if session.user_id and user and session.user_id == user.id %}
+                    <div>
+                        <a href="{{ url_for('update_post', id=post.id) }}" class="btn btn-warning btn-sm">
+                            <i class="fas fa-edit"></i>
+                        </a>
+                        <a href="{{ url_for('delete_post', id=post.id) }}"
+                           class="btn btn-danger btn-sm"
+                           onclick="return confirm('Delete this post?')">
+                            <i class="fas fa-trash"></i>
+                        </a>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="card-footer bg-transparent border-top-0">
+                <small class="text-muted">
+                    <i class="fas fa-clock"></i> {{ post.created.strftime('%b %d, %Y') }}
+                </small>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% else %}
+<div class="text-center py-5">
+    <i class="fas fa-bowl-food fa-5x text-muted mb-3"></i>
+    <h3 class="text-muted">No dishes posted yet</h3>
+    {% if session.user_id and user and session.user_id == user.id %}
+    <p class="text-muted">Start sharing your culinary creations!</p>
+    <a href="{{ url_for('create_post') }}" class="btn btn-custom mt-3">
+        <i class="fas fa-plus-circle"></i> Create Your First Post
+    </a>
+    {% endif %}
+</div>
+{% endif %}
+{% endblock %}
