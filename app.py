@@ -26,6 +26,7 @@ class User(db.Model):
     username = db.Column(db.String(80), unique=True, nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
     password = db.Column(db.String(200), nullable=False)
+    is_admin = db.Column(db.Boolean, default=False, nullable=False)
     created = db.Column(db.DateTime, nullable=False, default=db.func.current_timestamp())
     posts = db.relationship('Post', backref='author', lazy=True, cascade='all, delete-orphan')
 
@@ -48,6 +49,14 @@ class Post(db.Model):
 
 with app.app_context():
     db.create_all()
+    # Create admin user if doesn't exist
+    admin = User.query.filter_by(username='admin').first()
+    if not admin:
+        admin_password = generate_password_hash('admin123', method='pbkdf2:sha256')
+        admin_user = User(username='admin', email='admin@foodie.com', password=admin_password, is_admin=True)
+        db.session.add(admin_user)
+        db.session.commit()
+        print("Admin user created: username=admin, password=admin123")
 
 
 # Login required decorator
@@ -57,6 +66,23 @@ def login_required(f):
         if 'user_id' not in session:
             flash('Please login to access this page.', 'warning')
             return redirect(url_for('login'))
+        return f(*args, **kwargs)
+
+    return decorated_function
+
+
+# Admin required decorator
+def admin_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if 'user_id' not in session:
+            flash('Please login to access this page.', 'warning')
+            return redirect(url_for('login'))
+
+        user = User.query.get(session['user_id'])
+        if not user or not user.is_admin:
+            flash('Admin access required!', 'danger')
+            return redirect(url_for('index'))
         return f(*args, **kwargs)
 
     return decorated_function
@@ -100,7 +126,7 @@ def register():
 
         # Create new user
         hashed_password = generate_password_hash(password, method='pbkdf2:sha256')
-        new_user = User(username=username, email=email, password=hashed_password)
+        new_user = User(username=username, email=email, password=hashed_password, is_admin=False)
 
         try:
             db.session.add(new_user)
@@ -127,6 +153,7 @@ def login():
         if user and check_password_hash(user.password, password):
             session['user_id'] = user.id
             session['username'] = user.username
+            session['is_admin'] = user.is_admin
             flash(f'Welcome back, {user.username}!', 'success')
             return redirect(url_for('index'))
         else:
@@ -140,6 +167,7 @@ def login():
 def logout():
     session.pop('user_id', None)
     session.pop('username', None)
+    session.pop('is_admin', None)
     flash('You have been logged out.', 'info')
     return redirect(url_for('index'))
 
@@ -203,8 +231,8 @@ def view_post(id):
 def update_post(id):
     post = Post.query.get_or_404(id)
 
-    # Check if user owns this post
-    if post.user_id != session['user_id']:
+    # Check if user owns this post or is admin
+    if post.user_id != session['user_id'] and not session.get('is_admin'):
         flash('You can only edit your own posts!', 'danger')
         return redirect(url_for('index'))
 
@@ -239,8 +267,8 @@ def update_post(id):
 def delete_post(id):
     post = Post.query.get_or_404(id)
 
-    # Check if user owns this post
-    if post.user_id != session['user_id']:
+    # Check if user owns this post or is admin
+    if post.user_id != session['user_id'] and not session.get('is_admin'):
         flash('You can only delete your own posts!', 'danger')
         return redirect(url_for('index'))
 
@@ -270,6 +298,96 @@ def profile(username):
 
     posts = Post.query.filter_by(user_id=user.id).order_by(Post.created.desc()).all()
     return render_template('profile.html', user=user, posts=posts)
+
+
+# Admin Routes
+@app.route('/admin')
+@admin_required
+def admin_dashboard():
+    users = User.query.order_by(User.created.desc()).all()
+    posts = Post.query.order_by(Post.created.desc()).all()
+    total_users = User.query.count()
+    total_posts = Post.query.count()
+
+    return render_template('admin_dashboard.html',
+                           users=users,
+                           posts=posts,
+                           total_users=total_users,
+                           total_posts=total_posts)
+
+
+@app.route('/admin/delete_user/<int:id>')
+@admin_required
+def admin_delete_user(id):
+    user = User.query.get_or_404(id)
+
+    # Prevent admin from deleting themselves
+    if user.id == session['user_id']:
+        flash('You cannot delete your own account!', 'danger')
+        return redirect(url_for('admin_dashboard'))
+
+    try:
+        # Delete all posts and images by this user
+        for post in user.posts:
+            if post.image_filename:
+                filepath = os.path.join(app.config['UPLOAD_FOLDER'], post.image_filename)
+                if os.path.exists(filepath):
+                    os.remove(filepath)
+
+        db.session.delete(user)
+        db.session.commit()
+        flash(f'User {user.username} and all their posts have been deleted!', 'success')
+    except Exception as e:
+        print(f"Error: {e}")
+        db.session.rollback()
+        flash('An error occurred while deleting the user.', 'danger')
+
+    return redirect(url_for('admin_dashboard'))
+
+
+@app.route('/admin/delete_post/<int:id>')
+@admin_required
+def admin_delete_post(id):
+    post = Post.query.get_or_404(id)
+
+    try:
+        # Delete image file if exists
+        if post.image_filename:
+            filepath = os.path.join(app.config['UPLOAD_FOLDER'], post.image_filename)
+            if os.path.exists(filepath):
+                os.remove(filepath)
+
+        db.session.delete(post)
+        db.session.commit()
+        flash('Post deleted successfully!', 'success')
+    except Exception as e:
+        print(f"Error: {e}")
+        flash('An error occurred while deleting the post.', 'danger')
+
+    return redirect(url_for('admin_dashboard'))
+
+
+@app.route('/admin/toggle_admin/<int:id>')
+@admin_required
+def toggle_admin(id):
+    user = User.query.get_or_404(id)
+
+    # Prevent admin from removing their own admin status
+    if user.id == session['user_id']:
+        flash('You cannot remove your own admin status!', 'danger')
+        return redirect(url_for('admin_dashboard'))
+
+    try:
+        user.is_admin = not user.is_admin
+        db.session.commit()
+        status = 'Admin' if user.is_admin else 'Regular user'
+        flash(f'{user.username} is now a {status}!', 'success')
+    except Exception as e:
+        print(f"Error: {e}")
+        db.session.rollback()
+        flash('An error occurred.', 'danger')
+
+    return redirect(url_for('admin_dashboard'))
 
 
 if __name__ == '__main__':

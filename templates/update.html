@@ -9,9 +9,17 @@
             <div class="card-body p-5">
                 <div class="text-center mb-4">
                     <i class="fas fa-edit fa-3x text-danger mb-3"></i>
-                    <h2 class="fw-bold">Update Your Dish</h2>
-                    <p class="text-muted">Make changes to your post</p>
+                    <h2 class="fw-bold">Update Dish</h2>
+                    <p class="text-muted">Make changes to this post</p>
                 </div>
+
+                <!-- Admin Warning -->
+                {% if session.is_admin and session.user_id != post.user_id %}
+                <div class="alert alert-warning mb-4">
+                    <i class="fas fa-shield-alt"></i> <strong>Admin Mode:</strong> You are editing a post by
+                    <strong>{{ post.author.username }}</strong>
+                </div>
+                {% endif %}
 
                 <form method="POST" action="{{ url_for('update_post', id=post.id) }}" enctype="multipart/form-data">
                     <div class="mb-4">
